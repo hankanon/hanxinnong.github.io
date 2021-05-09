@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Vue3 原理," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Vue3.0 composition-api的用法12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152&amp;lt;body&amp;gt;  &amp;lt;h3&amp;gt;reactive&amp;lt;/h3&amp;gt;  &amp;lt;div id=&apos;app&apos;&amp;gt;    &amp;lt;button">
+<meta name="keywords" content="Vue3 原理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue3响应式原理">
+<meta property="og:url" content="http://www.hankanon.com/2021/05/09/响应式原理/index.html">
+<meta property="og:site_name" content="blog">
+<meta property="og:description" content="Vue3.0 composition-api的用法12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152&amp;lt;body&amp;gt;  &amp;lt;h3&amp;gt;reactive&amp;lt;/h3&amp;gt;  &amp;lt;div id=&apos;app&apos;&amp;gt;    &amp;lt;button">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gitee.com/hankanon/public/raw/master/WX20201221-015918@2x.png">
+<meta property="og:image" content="https://gitee.com/hankanon/public/raw/master/20201221001406.png">
+<meta property="og:image" content="https://gitee.com/hankanon/public/raw/master/20201220225052.png">
+<meta property="og:updated_time" content="2021-05-09T12:04:04.206Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vue3响应式原理">
+<meta name="twitter:description" content="Vue3.0 composition-api的用法12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152&amp;lt;body&amp;gt;  &amp;lt;h3&amp;gt;reactive&amp;lt;/h3&amp;gt;  &amp;lt;div id=&apos;app&apos;&amp;gt;    &amp;lt;button">
+<meta name="twitter:image" content="https://gitee.com/hankanon/public/raw/master/WX20201221-015918@2x.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.hankanon.com/2021/05/09/响应式原理/"/>
+
+
+
+
+
+  <title>Vue3响应式原理 | blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-schedule">
+          <a href="/schedule/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />
+            
+            日程表
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-sitemap">
+          <a href="/sitemap.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br />
+            
+            站点地图
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.hankanon.com/2021/05/09/响应式原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hankanon">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Vue3响应式原理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-09T20:03:12+08:00">
+                2021-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Vue3/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue3</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Vue3-0-composition-api的用法"><a href="#Vue3-0-composition-api的用法" class="headerlink" title="Vue3.0 composition-api的用法"></a>Vue3.0 composition-api的用法</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">h3</span>&gt;</span>reactive<span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">'app'</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> @<span class="attr">click</span>=<span class="string">'click'</span>&gt;</span>reverse<span class="tag">&lt;/<span class="name">button</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">"margin-top: 20px"</span>&gt;</span>&#123;&#123; state.message &#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">"margin-top: 20px"</span>&gt;</span>&#123;&#123; state.count &#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">"margin-top: 20px"</span>&gt;</span>&#123;&#123; state.doubleCount &#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript">  <span class="keyword">const</span> &#123; createApp, reactive, defineComponent, computed, watchEffect, onMounted &#125; = Vue</span></span><br><span class="line"><span class="javascript">  <span class="keyword">const</span> App = &#123;</span></span><br><span class="line"><span class="undefined">      setup(props, &#123;attrs, slots, emit&#125;=ctx) &#123;</span></span><br><span class="line"><span class="javascript">          <span class="comment">// setup 函数里面不能使用this</span></span></span><br><span class="line"><span class="undefined">          </span></span><br><span class="line"><span class="javascript">          <span class="comment">// 数据响应式处理</span></span></span><br><span class="line"><span class="javascript">          <span class="keyword">const</span> state = reactive(&#123;</span></span><br><span class="line"><span class="javascript">              message: <span class="string">'Hello Vue3!!'</span>,</span></span><br><span class="line"><span class="undefined">              count: 1,</span></span><br><span class="line"><span class="javascript">              <span class="comment">// 计算属性</span></span></span><br><span class="line"><span class="javascript">              doubleCount: computed(<span class="function"><span class="params">()</span>=&gt;</span>&#123;<span class="keyword">return</span> state.count * <span class="number">2</span>&#125;)</span></span><br><span class="line"><span class="undefined">          &#125;)</span></span><br><span class="line"><span class="javascript">          <span class="comment">// 方法</span></span></span><br><span class="line"><span class="javascript">          click = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span></span><br><span class="line"><span class="javascript">              state.message = state.message.split(<span class="string">''</span>).reverse().join(<span class="string">''</span>)</span></span><br><span class="line"><span class="undefined">          &#125;</span></span><br><span class="line"><span class="javascript">          <span class="comment">// 监听函数</span></span></span><br><span class="line"><span class="javascript">          watchEffect(<span class="function"><span class="params">()</span>=&gt;</span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="built_in">console</span>.log(state.message)</span></span><br><span class="line"><span class="undefined">          &#125;)</span></span><br><span class="line"><span class="javascript">          <span class="comment">// 生命周期</span></span></span><br><span class="line"><span class="javascript">          onMounted(<span class="function"><span class="params">()</span>=&gt;</span>&#123;&#125;)</span></span><br><span class="line"><span class="javascript">          <span class="keyword">return</span> &#123;</span></span><br><span class="line"><span class="undefined">              state,</span></span><br><span class="line"><span class="undefined">              click</span></span><br><span class="line"><span class="undefined">          &#125;</span></span><br><span class="line"><span class="undefined">      &#125;,</span></span><br><span class="line"><span class="javascript">      <span class="comment">// 指令</span></span></span><br><span class="line"><span class="undefined">      directives: &#123;</span></span><br><span class="line"><span class="javascript">        <span class="string">'focus'</span>: <span class="function">(<span class="params">el, &#123; value &#125;</span>) =&gt;</span> &#123;</span></span><br><span class="line"><span class="javascript">          <span class="keyword">if</span> (value) &#123;</span></span><br><span class="line"><span class="undefined">            el.focus()</span></span><br><span class="line"><span class="undefined">          &#125;</span></span><br><span class="line"><span class="undefined">        &#125;</span></span><br><span class="line"><span class="undefined">      &#125;</span></span><br><span class="line"><span class="undefined">  &#125;</span></span><br><span class="line"><span class="javascript">  createApp(App).mount(<span class="string">'#app'</span>)</span></span><br><span class="line"><span class="javascript">  <span class="comment">// Vue2 的 初始化方式</span></span></span><br><span class="line"><span class="javascript">  <span class="keyword">new</span> Vue(&#123;</span></span><br><span class="line"><span class="javascript">      render: <span class="function"><span class="params">h</span> =&gt;</span> h(App)</span></span><br><span class="line"><span class="javascript">    &#125;).$mount(<span class="string">'#app'</span>)</span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="Vue2-版本响应式处理的一些局限性"><a href="#Vue2-版本响应式处理的一些局限性" class="headerlink" title="Vue2 版本响应式处理的一些局限性"></a>Vue2 版本响应式处理的一些局限性</h3><ul>
+<li>无法监控到数组下标的变化，导致通过数组下标添加元素，不能实时响应</li>
+<li>只能劫持对象的属性，从而需要对每个对象，每个属性进行遍历，如果，属性值是对象，还需要深度遍历。</li>
+</ul>
+<h4 id="Vue3-和-Vue2-响应式方案对比"><a href="#Vue3-和-Vue2-响应式方案对比" class="headerlink" title="Vue3 和 Vue2 响应式方案对比"></a>Vue3 和 Vue2 响应式方案对比</h4><table>
+<thead>
+<tr>
+<th>实现方式</th>
+<th>Vue2</th>
+<th>Vue3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>差异</td>
+<td>劫持的是对象中的属性</td>
+<td>劫持的是整个对象</td>
+</tr>
+<tr>
+<td>优势</td>
+<td>兼容性好，支持IE9+，性能好</td>
+<td>能够监听整个对象的变化，对数组、对象的属性增加、删除都能监听到，不需要循环遍历监听，初始化阶段性能好</td>
+</tr>
+<tr>
+<td>不足</td>
+<td>不能监听对象、数组的增删、删除，不支持，Map，Set等数据结构的响应式</td>
+<td>不支持IE浏览器</td>
+</tr>
+</tbody>
+</table>
+<h2 id="Vue2-和Vue3-运行机制对比"><a href="#Vue2-和Vue3-运行机制对比" class="headerlink" title="Vue2 和Vue3 运行机制对比"></a>Vue2 和Vue3 运行机制对比</h2><p>Vue2 运行机制：<br><img src="https://gitee.com/hankanon/public/raw/master/WX20201221-015918@2x.png" alt=""><br>图片来自：<a href="https://juejin.cn/book/6844733705089449991" target="_blank" rel="noopener">掘金小册：剖析 Vue.js 内部运行机制</a><br>Vue3 运行机制：<br><img src="https://gitee.com/hankanon/public/raw/master/20201221001406.png" alt=""></p>
+<h2 id="Vue3数据响应式原理"><a href="#Vue3数据响应式原理" class="headerlink" title="Vue3数据响应式原理"></a>Vue3数据响应式原理</h2><h3 id="Proxy-和-Reflect"><a href="#Proxy-和-Reflect" class="headerlink" title="Proxy 和 Reflect"></a>Proxy 和 Reflect</h3><ul>
+<li>Proxy： 可以理解成，在目标对象之前架设一层“拦截”，外界对该对象的访问，都必须先通过这层拦截，因此提供了一种机制，可以对外界的访问进行过滤和改写。Proxy 这个词的原意是代理，用在这里表示由它来“代理”某些操作，可以译为“代理器”</li>
+<li>Reflect： 是一个内置的对象，它提供拦截 JavaScript 操作的方法。Reflect不是一个函数对象，因此它是不可构造的。不能通过<strong>new运算符</strong>对其进行调用</li>
+</ul>
+<p>链接：<a href="https://es6.ruanyifeng.com/#docs/proxy" target="_blank" rel="noopener">【Proxy具体用法】</a><br>链接：<a href="https://es6.ruanyifeng.com/#docs/reflect" target="_blank" rel="noopener">【Reflect具体用法】</a></p>
+<h3 id="不同类型的Reactive"><a href="#不同类型的Reactive" class="headerlink" title="不同类型的Reactive"></a>不同类型的Reactive</h3><h4 id="①-reactive"><a href="#①-reactive" class="headerlink" title="① reactive"></a>① reactive</h4><p>建立响应式reactive，返回proxy对象，这个reactive可以深层次递归，也就是如果发现展开的属性值是引用类型的而且被引用，还会用reactive递归处理。而且属性是可以被修改的。</p>
+<h4 id="②-shallowReactive"><a href="#②-shallowReactive" class="headerlink" title="② shallowReactive"></a>② shallowReactive</h4><p>建立响应式shallowReactive，返回proxy对象。和reactive的区别是只建立一层的响应式，也就是说如果发现展开属性是引用类型也不会递归。</p>
+<h4 id="③-readonly"><a href="#③-readonly" class="headerlink" title="③ readonly"></a>③ readonly</h4><p>返回的proxy处理的对象，可以展开递归处理，但是属性是只读的，不能修改。可以做props传递给子组件使用。</p>
+<h4 id="④-shallowReadonly"><a href="#④-shallowReadonly" class="headerlink" title="④ shallowReadonly"></a>④ shallowReadonly</h4><p>返回经过处理的proxy对象，但是建立响应式属性是只读的，不展开引用也不递归转换，可以这用于为有状态组件创建props代理对象。</p>
+<h3 id="储存对象与proxy"><a href="#储存对象与proxy" class="headerlink" title="储存对象与proxy"></a>储存对象与proxy</h3><p>存储代理对象和原对象之间的映射关系<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 键值对 ： &#123; [targetObject] : obseved &#125; </span></span><br><span class="line"><span class="comment">// 键是原对象， 值是代理对象</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> reactiveMap = <span class="keyword">new</span> <span class="built_in">WeakMap</span>&lt;Target, any&gt;()</span><br><span class="line"></span><br><span class="line"><span class="comment">// &#123; [target] : obseved &#125;</span></span><br><span class="line"><span class="comment">// 键是原对象， 值是代理对象</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> readonlyMap = <span class="keyword">new</span> <span class="built_in">WeakMap</span>&lt;Target, any&gt;()</span><br></pre></td></tr></table></figure></p>
+<h3 id="reactive入口解析"><a href="#reactive入口解析" class="headerlink" title="reactive入口解析"></a>reactive入口解析</h3><p>通过reactive() 函数来观察Vue3数据响应式的实现原理<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">reactive</span>(<span class="params">target: object</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// if trying to observe a readonly proxy, return the readonly version.</span></span><br><span class="line">  <span class="keyword">if</span> (target &amp;&amp; (target <span class="keyword">as</span> Target)[ReactiveFlags.IS_READONLY]) &#123;</span><br><span class="line">    <span class="keyword">return</span> target</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> createReactiveObject(</span><br><span class="line">    target,</span><br><span class="line">    <span class="literal">false</span>,</span><br><span class="line">    mutableHandlers,</span><br><span class="line">    mutableCollectionHandlers</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>其实就是通过createReactiveObject方法来产生一个Proxy，并根据不同的数据类型给了不同的处理方式</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createReactiveObject</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  target: Target,</span></span></span><br><span class="line"><span class="function"><span class="params">  isReadonly: boolean,</span></span></span><br><span class="line"><span class="function"><span class="params">  baseHandlers: ProxyHandler&lt;any&gt;,</span></span></span><br><span class="line"><span class="function"><span class="params">  collectionHandlers: ProxyHandler&lt;any&gt;</span></span></span><br><span class="line"><span class="function"><span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!isObject(target)) &#123;</span><br><span class="line">    <span class="keyword">return</span> target</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 如果已经是proxy对象则直接返回，有个例外，如果是readOnly作用于响应式 则继续</span></span><br><span class="line">  <span class="keyword">if</span> (</span><br><span class="line">    target[ReactiveFlags.RAW] &amp;&amp; </span><br><span class="line">    !(isReadonly &amp;&amp; target[ReactiveFlags.IS_REACTIVE]) </span><br><span class="line">  ) &#123;</span><br><span class="line">    <span class="keyword">return</span> target</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">const</span> proxyMap = isReadonly ? readonlyMap : reactiveMap</span><br><span class="line">  <span class="comment">// 已经有了对应的proxy映射 直接</span></span><br><span class="line">  <span class="keyword">const</span> existingProxy = proxyMap.get(target)</span><br><span class="line">  <span class="keyword">if</span> (existingProxy) &#123;</span><br><span class="line">    <span class="keyword">return</span> existingProxy</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">const</span> targetType = getTargetType(target)</span><br><span class="line">  <span class="comment">// 只有在白名单中的数据类型才可以被响应式</span></span><br><span class="line">  <span class="keyword">if</span> (targetType === TargetType.INVALID) &#123;</span><br><span class="line">    <span class="keyword">return</span> target</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 通过Proxy API劫持target对象，把它变成响应式</span></span><br><span class="line">  <span class="keyword">const</span> proxy = <span class="keyword">new</span> <span class="built_in">Proxy</span>(</span><br><span class="line">    target,</span><br><span class="line">    <span class="comment">// Map Set WeakMap WeakSet用collectionhandlers代理 Object Array用baseHandlers代理</span></span><br><span class="line">    targetType === TargetType.COLLECTION ? collectionHandlers : baseHandlers</span><br><span class="line">  )</span><br><span class="line">  <span class="comment">// 存储一个原始类型和proxy数据类型的映射 </span></span><br><span class="line">  proxyMap.set(target, proxy)</span><br><span class="line">  <span class="keyword">return</span> proxy</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>首先判断是否是对象类型，如果不是就直接返回，否则继续</li>
+<li>判断如果目标对象已经是proxy了直接返回，否则继续</li>
+<li>然后获取当前的目标对象的ProxyMap，如果存在就返回对应的proxy(在函数最后，我们会使用一个WeakMap类型的对象存储原始数据类型和proxy数据类型的映射) 否则继续</li>
+<li>判断目标对象是否在可响应式数据类型的白名单中，如果不在直接返回目标对象，否则继续。</li>
+</ul>
+<p><strong>响应式数据白名单只对这6种类型的数据做响应式处理</strong><br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">targetTypeMap</span>(<span class="params">rawType: string</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">switch</span> (rawType) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'Object'</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'Array'</span>:</span><br><span class="line">      <span class="keyword">return</span> TargetType.COMMON</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'Map'</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'Set'</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'WeakMap'</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'WeakSet'</span>:</span><br><span class="line">      <span class="keyword">return</span> TargetType.COLLECTION</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">      <span class="keyword">return</span> TargetType.INVALID</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="collectionHandlers-和-baseHandlers"><a href="#collectionHandlers-和-baseHandlers" class="headerlink" title="collectionHandlers 和 baseHandlers"></a>collectionHandlers 和 baseHandlers</h4><ul>
+<li>baseHandlers： 处理Object 和 Array 类型</li>
+<li>collectionHandlers： 处理 Map、Set、WeakMap、WeakSet 类型</li>
+</ul>
+<h4 id="普通的响应式对象处理"><a href="#普通的响应式对象处理" class="headerlink" title="普通的响应式对象处理"></a>普通的响应式对象处理</h4><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">const</span> get = <span class="comment">/*#__PURE__*/</span> createGetter()</span><br><span class="line"><span class="keyword">const</span> set = <span class="comment">/*#__PURE__*/</span> createSetter()</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> mutableHandlers: ProxyHandler&lt;object&gt; = &#123;</span><br><span class="line">  get, <span class="comment">// 对数据的读取属性进行拦截 包含target.语法和target[]</span></span><br><span class="line">  set, <span class="comment">// 对数据的存入属性进行拦截</span></span><br><span class="line">  deleteProperty, <span class="comment">// delete操作符进行拦截 可以监听到属性的删除操作</span></span><br><span class="line">  has, <span class="comment">// 对对象的in操作符进行属性拦截</span></span><br><span class="line">  ownKeys <span class="comment">// 访问对象属性名的时候会触发ownKeys函数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="createGetter函数"><a href="#createGetter函数" class="headerlink" title="createGetter函数"></a>createGetter函数</h5><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createGetter</span>(<span class="params">isReadonly = false, shallow = false</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">get</span>(<span class="params">target: Target, key: string | symbol, receiver: object</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 如果是只读属性 直接return target</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 求值 </span></span><br><span class="line">    <span class="comment">// 如果是数组单独处理</span></span><br><span class="line">    <span class="keyword">const</span> targetIsArray = isArray(target)</span><br><span class="line">    <span class="keyword">if</span> (targetIsArray &amp;&amp; hasOwn(arrayInstrumentations, key)) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">Reflect</span>.get(arrayInstrumentations, key, receiver)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 对象</span></span><br><span class="line">    <span class="keyword">const</span> res = <span class="built_in">Reflect</span>.get(target, key, receiver)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (!isReadonly) &#123;</span><br><span class="line">      <span class="comment">// 依赖收集</span></span><br><span class="line">      track(target, TrackOpTypes.GET, key)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 递归调用响应式</span></span><br><span class="line">    <span class="keyword">if</span> (isObject(res)) &#123;</span><br><span class="line">      <span class="keyword">return</span> isReadonly ? readonly(res) : reactive(res)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 返回结果</span></span><br><span class="line">    <span class="keyword">return</span> res</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当我们访问对象的属性的时候会触发get函数，这个函数中的主要步骤有三个，首先会使用Reflect.get进行求值, 然后判断是否是只读的，如果不是就调用track进行依赖收集，然后对求值的结果进行判断，如果是对象则递归调用reactive或者readonly对结果继续进行响应式处理,最后将获取的结果返回。</p>
+<p>注意：这里和Vue2响应式处理的方式有所不同，这也是Vue3响应式在初始化的时候性能优化的一个点。</p>
+<ul>
+<li>Vue2在实现响应式的时候会在初始化阶段判断对象的属性是否是Object类型,如果是的话就会递归的调用Observer将子对象也变成响应式。</li>
+<li>Vue3的实现流程则是在初始化阶段的时候只对第一层的属性进行响应式，当返回proxy的属性被访且是对象的话再进行递归响应式，Proxy劫持的是对象本身，并不能劫持子对象的变化，正是利用这种特性可以延时定义子对象响应式的实现，在初始化的时候性能也会得到提升。</li>
+</ul>
+<h5 id="createSetter函数"><a href="#createSetter函数" class="headerlink" title="createSetter函数"></a>createSetter函数</h5><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createSetter</span>(<span class="params">shallow = false</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">set</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">    target: object,</span></span></span><br><span class="line"><span class="function"><span class="params">    key: string | symbol,</span></span></span><br><span class="line"><span class="function"><span class="params">    value: unknown,</span></span></span><br><span class="line"><span class="function"><span class="params">    receiver: object</span></span></span><br><span class="line"><span class="function"><span class="params">  </span>): <span class="title">boolean</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 1.先获取oldValue</span></span><br><span class="line">    <span class="keyword">const</span> oldValue = (target <span class="keyword">as</span> any)[key]</span><br><span class="line">    <span class="comment">// 2.设置新值</span></span><br><span class="line">    <span class="keyword">const</span> result = <span class="built_in">Reflect</span>.set(target, key, value, receiver)</span><br><span class="line">    <span class="comment">// don't trigger if target is something up in the prototype chain of original</span></span><br><span class="line">    <span class="comment">// 派发更新</span></span><br><span class="line">    <span class="keyword">if</span> (target === toRaw(receiver)) &#123;</span><br><span class="line">      <span class="keyword">if</span> (!hadKey) &#123;</span><br><span class="line">        trigger(target, TriggerOpTypes.ADD, key, value)</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (hasChanged(value, oldValue)) &#123;</span><br><span class="line">        trigger(target, TriggerOpTypes.SET, key, value, oldValue)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当我们更新响应式对象的属性的时候会触发set函数,set函数内部的主要步骤也是三个，首先获取这个属性的oldValue，然后通过Reflect.set对属性进行赋值操作,最后调用trigger进行派发更新，在派发更新阶段如果是新增属性则trigger的type是add,如果value!==oldValue则trigger的type是set。</p>
+<h4 id="track-依赖收集"><a href="#track-依赖收集" class="headerlink" title="track - 依赖收集"></a>track - 依赖收集</h4><h4 id="trigger-派发更新"><a href="#trigger-派发更新" class="headerlink" title="trigger - 派发更新"></a>trigger - 派发更新</h4><h2 id="完整的响应式图"><a href="#完整的响应式图" class="headerlink" title="完整的响应式图"></a>完整的响应式图</h2><p><img src="https://gitee.com/hankanon/public/raw/master/20201220225052.png" alt=""><br>链接：<a href="https://juejin.cn/post/6874754047891472391" target="_blank" rel="noopener">图片来自掘金：深入学习vue3.0核心实现原理</a></p>
+<p><strong>问题：Vue2 中可以this访问到定义在data、methods中的变量或方法，是通过 defineProperty 进行数据上下文代理，让我们可以直接通过 this 进行访问，并在更改值后触发 get、set。<br>Vue3 是怎么实现的？</strong></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <!-- 本文结束标记 -->
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color:#ccc;font-size:16px;">------------&nbsp;本文结束&nbsp;<i class="fa fa-globe"></i>&nbsp;感谢您的阅读&nbsp;-----------</div>
+</div>
+      
+    </div>
+    <!-- 本文结束标记END -->
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Vue3-原理/" rel="tag"># Vue3 原理</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/05/09/开发小技巧/" rel="next" title="开发小技巧">
+                <i class="fa fa-chevron-left"></i> 开发小技巧
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="hankanon" />
+            
+              <p class="site-author-name" itemprop="name">hankanon</p>
+              <p class="site-description motion-element" itemprop="description">想到就去做</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hankanon" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com" target="_blank" title="微博">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>微博</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.csdn.net/baidu_20144723" title="CSDN" target="_blank">CSDN</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://gongenbo.com/" title="大兴的博客" target="_blank">大兴的博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue3-0-composition-api的用法"><span class="nav-number">1.</span> <span class="nav-text">Vue3.0 composition-api的用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Vue2-版本响应式处理的一些局限性"><span class="nav-number">1.1.</span> <span class="nav-text">Vue2 版本响应式处理的一些局限性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Vue3-和-Vue2-响应式方案对比"><span class="nav-number">1.1.1.</span> <span class="nav-text">Vue3 和 Vue2 响应式方案对比</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue2-和Vue3-运行机制对比"><span class="nav-number">2.</span> <span class="nav-text">Vue2 和Vue3 运行机制对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue3数据响应式原理"><span class="nav-number">3.</span> <span class="nav-text">Vue3数据响应式原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Proxy-和-Reflect"><span class="nav-number">3.1.</span> <span class="nav-text">Proxy 和 Reflect</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不同类型的Reactive"><span class="nav-number">3.2.</span> <span class="nav-text">不同类型的Reactive</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#①-reactive"><span class="nav-number">3.2.1.</span> <span class="nav-text">① reactive</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#②-shallowReactive"><span class="nav-number">3.2.2.</span> <span class="nav-text">② shallowReactive</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#③-readonly"><span class="nav-number">3.2.3.</span> <span class="nav-text">③ readonly</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#④-shallowReadonly"><span class="nav-number">3.2.4.</span> <span class="nav-text">④ shallowReadonly</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#储存对象与proxy"><span class="nav-number">3.3.</span> <span class="nav-text">储存对象与proxy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#reactive入口解析"><span class="nav-number">3.4.</span> <span class="nav-text">reactive入口解析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#collectionHandlers-和-baseHandlers"><span class="nav-number">3.4.1.</span> <span class="nav-text">collectionHandlers 和 baseHandlers</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#普通的响应式对象处理"><span class="nav-number">3.4.2.</span> <span class="nav-text">普通的响应式对象处理</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#createGetter函数"><span class="nav-number">3.4.2.1.</span> <span class="nav-text">createGetter函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#createSetter函数"><span class="nav-number">3.4.2.2.</span> <span class="nav-text">createSetter函数</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#track-依赖收集"><span class="nav-number">3.4.3.</span> <span class="nav-text">track - 依赖收集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#trigger-派发更新"><span class="nav-number">3.4.4.</span> <span class="nav-text">trigger - 派发更新</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#完整的响应式图"><span class="nav-number">4.</span> <span class="nav-text">完整的响应式图</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hankanon</span>
+
+  
+</div>
+<!-- 隐藏
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+-->
+<!-- 新增访客统计代码 -->
+<div class="busuanzi-count">
+    <script async="" src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      访问用户： <span class="busuanzi-value" id="busuanzi_value_site_uv"></span> 人
+    </span>
+    <div class="powered-by"></div>
+    <span class="site-uv">
+      <i class="fa fa-eye"></i>
+      访问次数： <span class="busuanzi-value" id="busuanzi_value_site_pv"></span> 次
+    </span>
+    <!-- 博客字数统计 -->
+    <span class="site-pv">
+      <i class="fa fa-pencil"></i>
+      博客全站共： <span class="post-count">3.7k</span> 字
+    </span>
+</div>
+<!-- 新增访客统计代码 END-->
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/"});</script></body>
+</html>
